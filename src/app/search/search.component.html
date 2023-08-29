@@ -1,0 +1,15 @@
+<div fxFlex="100" class="search-wrapper" fxLayoutAlign="end center">
+  <mat-form-field *ngIf="showSearch" fxLayout.lt-sm="row" fxFlex.lt-sm="100" fxLayoutAlign="end center"
+    floatLabel="never" class="search-form" appClickOutside (clickOutside)="closeSearch()">
+    <button mat-button matPrefix mat-icon-button class="disabled">
+      <mat-icon class="search-icon">search</mat-icon>
+    </button>
+    <input class="search-input" matInput (input)="applySearch('apply')" [(ngModel)]="searchValue" placeholder="Search"
+      autocomplete="off" autofocus #search>
+    <button mat-button matSuffix mat-icon-button *ngIf="searchValue && searchValue.length">
+      <mat-icon class="close-icon" (click)="applySearch('close')">close</mat-icon>
+    </button>
+  </mat-form-field>
+  <i *ngIf="!showSearch" class="material-icons hide-search-icon" title="Search" (click)="openSearch($event)"
+    aria-hidden="true">search</i>
+</div>

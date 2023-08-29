@@ -1,0 +1,26 @@
+<div fxLayout="row" class="pagination-wrapper">
+  <div class="entry-text" fxFlex="50" fxLayoutAlign="start center">
+    {{getEntriesText()}}
+  </div>
+  <div fxFlex="50" fxLayoutAlign="end center">
+    <div class="selected-page" fxLayout="row" *ngIf="maximumPages !== undefined">
+      <input class="page-input" [disabled]="isInputButtonDisabled(maximumPages,1)" (wheel)="handleScroll($event)"
+        (keyup)="handleScroll($event)" autocomplete="off" type="number" [(ngModel)]="paginatorIndex">
+      <div class="max-page-text"> &nbsp; of &nbsp; {{maximumPages || 1}} </div>
+      <button class="arrow-button" [ngClass]="{'disabled': isInputButtonDisabled(paginatorIndex,1)}"
+        [disabled]="isInputButtonDisabled(paginatorIndex,1)">
+        <mat-icon class="arrow-icon" (click)="movetoPage(paginatorIndex-1)">
+          keyboard_arrow_left
+        </mat-icon>
+      </button>
+      <button class="arrow-button" [ngClass]="{'disabled': isInputButtonDisabled(paginatorIndex,maximumPages)}"
+        [disabled]="isInputButtonDisabled(paginatorIndex,maximumPages)">
+        <mat-icon class="arrow-icon" (click)="movetoPage(paginatorIndex+1)">
+          keyboard_arrow_right
+        </mat-icon>
+      </button>
+    </div>
+    <mat-paginator class="custom-paginator" [length]="countOfList" [pageIndex]="pageIndex" [pageSize]="pageSize"
+      (page)="onPaginateChange($event)"></mat-paginator>
+  </div>
+</div>

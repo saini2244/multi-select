@@ -1,0 +1,23 @@
+<form class="autocomplete-form" *ngIf="isSearchInputOpen">
+  <mat-form-field appearance="outline">
+    <mat-icon matPrefix class="search-icon">search</mat-icon>
+    <input type="text"
+           placeholder="Search Configuration"
+           aria-label="search configuration"
+           matInput
+           [formControl]="searchControl"
+           [matAutocomplete]="auto">
+    <button mat-button matSuffix mat-icon-button *ngIf="searchControl.value && searchControl.value.length">
+      <mat-icon class="close-icon" (click)="clearSearch()">close</mat-icon>
+    </button>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="handleOptionSelection($event)">
+      <mat-option *ngFor="let option of autocompleteList" [value]="option">
+        <ng-container *ngTemplateOutlet="optionTemplate;context: { optionObj: option, searchVal: searchControl.value || '' }"></ng-container>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</form>
+<div class="open-search-wrap" fxFlex="100" fxLayoutAlign="start center" *ngIf="!isSearchInputOpen" (click)="openSearchBox()">
+  <mat-icon class="search-icon">search</mat-icon>
+  <div class="d-inline-block">Search Configuration</div>
+</div>
