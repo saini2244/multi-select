@@ -1,0 +1,138 @@
+<mat-dialog-content class="cotainer black-dialog">
+  <div class="header">
+    <h5>{{ fovId }} <span (click)="openShortcutsModal()"> <i class="material-icons">info</i> <span>View
+          Shortcuts</span></span></h5>
+    <mat-dialog-actions class="close">
+      <button class="close-btn" mat-dialog-close="true" mat-dialog-close>
+        <i class="material-icons">close</i>
+      </button>
+    </mat-dialog-actions>
+  </div>
+  <mat-progress-bar id="img-loader" mode="indeterminate" *ngIf="!showImage"></mat-progress-bar>
+  <div class="hidden">
+    <img [src]="showUp && showUp.url ? showUp.url : ''" />
+    <img [src]="showRight && showRight.url ? showRight.url : ''" />
+    <img [src]="showDown && showDown.url ? showDown.url : ''" />
+    <img [src]="showLeft && showLeft.url ? showLeft.url : ''" />
+  </div>
+  <div id="canvas-container">
+    <!--<img id="img" [src]="imageUrl" (load)="onLoadImg()" />-->
+    <canvas id="fovCanvas"></canvas>
+    <div class="small-image-wrapper">
+      <img [src]="imageUrl" class="small-image" id="smallImage" />
+      <canvas id="imageCanvas" class="zoomed-part"></canvas>
+    </div>
+    <div class="btnCont" *ngIf="mode !== 'comments'">
+      <div class="round-icon-holder">
+        <i (click)="panBottom()" (mousedown)="startPanImage(panBottom)" (mouseup)="stopPanImage()"
+          class="material-icons inner-arrow-down">arrow_drop_down</i>
+        <i (click)="panTop()" (mousedown)="startPanImage(panTop)" (mouseup)="stopPanImage()"
+          class="material-icons inner-arrow-up">arrow_drop_up</i>
+        <i (click)="panRight()" (mousedown)="startPanImage(panRight)" (mouseup)="stopPanImage()"
+          class="material-icons inner-arrow-right">arrow_right</i>
+        <i (click)="panLeft()" (mousedown)="startPanImage(panLeft)" (mouseup)="stopPanImage()"
+          class="material-icons inner-arrow-left">arrow_left</i>
+      </div>
+      <i class="material-icons arrow-up" (click)="showUp && showUp.url ? loadNext('up') : false"
+        [ngClass]="{ disable: !(showUp && showUp.url) }">first_page</i>
+      <div class="center-icons">
+        <i class="material-icons arrow-left" (click)="showLeft && showLeft.url ? loadNext('left') : false"
+          [ngClass]="{ disable: !(showLeft && showLeft.url) }">first_page</i>
+        <i class="material-icons arrow-right" (click)="showRight && showRight.url ? loadNext('right') : false"
+          [ngClass]="{ disable: !(showRight && showRight.url) }">last_page</i>
+      </div>
+      <i class="material-icons arrow-down" (click)="showDown && showDown.url ? loadNext('down') : false"
+        [ngClass]="{ disable: !(showDown && showDown.url) }">last_page</i>
+      <div id="zoomBtns">
+        <button type="button" (click)="zoomToCenter(1)">
+          <span class="material-icons">
+            zoom_in
+          </span>
+        </button>
+        <button type="button" (click)="zoomToCenter(-1)">
+          <span class="material-icons">
+            zoom_out
+          </span>
+        </button>
+        <button type="button" (click)="resetZoom()">
+          <span class="material-icons">
+            refresh
+          </span>
+        </button>
+        <button type="button" (click)="enableCommentBox(hasEditAccess)">
+          <span class="material-icons">
+            textsms
+          </span>
+        </button>
+      </div>
+      <div *ngIf="commentSectionEnabled" class="comment-section-holder" (click)="disableCommentBox()">
+        <div class="comment-box" (click)="$event.stopPropagation()">
+          <i class="material-icons">arrow_left</i>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div fxLayout="row">
+              <div fxFlex="100">
+                <mat-form-field class="full-width">
+                  <input matInput placeholder="Add a comment" formControlName="description" autocomplete="off"
+                    [(ngModel)]="comment" />
+                  <mat-error *ngIf="isFieldInvalid('description')">
+                    Please enter your comment
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div fxLayout="row">
+              <div fxFlex="50">
+                <button mat-button class="default-button"
+                  [ngClass]="{'post-button': !isPostButtonDisabled, 'simple-button':isPostButtonDisabled}"
+                  [disabled]="isPostButtonDisabled">
+                  POST
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="textFooter" *ngIf="(totalScaleFactor | zoomPercentage) > 100">
+      <!-- *ngIf="zoomLevel > 100"-->
+      <span> Zoom:{{ totalScaleFactor | zoomPercentage }}% </span>
+      <span>
+        Warning:Zooming beyond 100% may impact the clarity
+      </span>
+    </div>
+  </div>
+  <div *ngIf="showShortcutModel" (click)="closeShortcutsModal()" class="shortcuts-modal-overlay">
+    <div class="shortcuts-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5>Shortcuts</h5>
+
+        <button (click)="closeShortcutsModal()" class="close-btn s-close">
+          <i class="material-icons">close</i>
+        </button>
+
+      </div>
+      <div class="modal-content">
+        <div class="content-table">
+          <div class="content-row">
+            <div class="content-data"><span class="left-item">To pane through</span></div>
+            <div class="content-data"><span class="right-item">Arrow keys</span></div>
+          </div>
+          <div class="content-row">
+            <div class="content-data"><span class="left-item">Move to adjacent FOV</span></div>
+            <div class="content-data"><span class="right-item"><span class="btn-look">Shift</span> <span
+                  class="plus-btn">+</span> Arrow Keys</span></div>
+          </div>
+          <div class="content-row">
+            <div class="content-data"><span class="left-item">Zoom In</span></div>
+            <div class="content-data"><span class="right-item">Single click on mouse</span></div>
+          </div>
+          <div class="content-row">
+            <div class="content-data"><span class="left-item">Zoom Out</span></div>
+            <div class="content-data"><span class="right-item"><span class="btn-look">Shift</span> <span
+                  class="plus-btn">+</span> Single click on mouse</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>

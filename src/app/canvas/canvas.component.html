@@ -1,0 +1,28 @@
+<mat-spinner [diameter]="50"  *ngIf="isSpinner" id="img-loader"></mat-spinner>
+<div class="canvas-wrap" id="{{'canvas-container'+canvasId}}">
+  <canvas class="image-canvas" id="{{canvasId}}"></canvas>
+  <div class="btnCont" [hidden]="!isEventResponsive">
+    <i class="material-icons" title="Zoom out" (click)="zoomToCenter(-1)"
+    >remove_circle_outline</i
+    >
+    <span class="zoom-percent-value">{{totalZoomPerc + 'x'}}</span>
+    <button mat-button class="dropdown-zoom" [matMenuTriggerFor]="zoomMenu" #zoomMenutrigger="matMenuTrigger">
+      <span class="material-icons dropdown-icon">
+        keyboard_arrow_{{zoomMenutrigger.menuOpen ? 'up' : 'down'}}
+      </span></button>
+    <i class="material-icons" title="Zoom in" (click)="zoomToCenter(1)"
+    >add_circle_outline</i
+    >
+    <i class="material-icons" [ngClass]="{'material-icons reset-icon': true, disabled: totalZoomPerc === startingZoomPerc}" title="Set original size" (click)="resize()"
+    >replay</i
+    >
+  </div>
+</div>
+<canvas id="full-image">
+</canvas>
+<div *ngIf="isCanvasHovered" id="img-clip" class="extracted-cell-img-clip"></div>
+
+
+<mat-menu #zoomMenu="matMenu">
+  <button mat-menu-item *ngFor="let zoomOption of zoomOptions" (click)="onZoomOptionSelect(zoomOption)" class="menu-item" [ngClass]="{'selected': totalZoomPerc === zoomOption}">{{zoomOption}}x</button>
+</mat-menu>
