@@ -1,0 +1,49 @@
+
+
+.pagination-wrapper {
+	padding: 1rem;
+	.selected-page {
+		display: flex;
+		align-items: center;
+		.page-input {
+			// color: $header-color !important;
+			font-size: 14px;
+			font-weight: 700;
+			line-height: 17px;
+			width: 30px;
+			margin-top: 0px;
+		}
+		.max-page-text {
+			display: flex;
+			font-weight: 700;
+			font-size: 14px;
+		}
+		.arrow-button {
+			background-color: transparent;
+			border: none;
+			cursor: pointer;
+			display: flex;
+			outline: none;
+			&:disabled {
+				.arrow-icon {
+					color: rgb(170, 170, 170) !important;
+					cursor: not-allowed !important;
+				}
+			}
+			.arrow-icon {
+				font-size: 25px;
+				// color: $header-color;
+			}
+		}
+	}
+	.custom-paginator {
+		display: none;
+	}
+
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+} 
