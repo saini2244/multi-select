@@ -1,0 +1,58 @@
+<mat-spinner [diameter]="50"  *ngIf="isSpinner" id="img-loader"></mat-spinner>
+<div class="canvas-wrap" id="{{'canvas-container'+canvasId}}">
+  <canvas class="image-canvas" id="{{canvasId}}"></canvas>
+  <div class="btnCont" [hidden]="!isEventResponsive">
+    <div class="measure-tools" *ngIf="tab === RBC" [ngClass] = "isMeasureToolOpen ? 'open' : ''">
+      <div class="measure-header">
+        <div class="measure" (click) = "openMeasureTool()">
+          <img [src]="isMeasureToolOpen ? 'assets/images/selected_measure_tool.png' : 'assets/images/measure_tool.png'" alt="measure">
+          <span>Measure</span>
+        </div>
+        <i *ngIf="isMeasureToolOpen" class="material-icons close" (click) = "closeMeasureTool()"></i>
+      </div>
+      <div class="measure-body" *ngIf="isMeasureToolOpen">
+        <div class="tool">
+          <button mat-button [matMenuTriggerFor]="measureToolMenu" #measureMenutrigger="matMenuTrigger">{{toolSelected}} <i class="material-icons">keyboard_arrow_{{measureMenutrigger.menuOpen ? 'up' : 'down'}}</i></button>
+          <mat-menu #measureToolMenu="matMenu" >
+            <button mat-menu-item class="measure-item" [disabled]="isLineMeasureToolSelected" (click)="addTool('line',measureValue)">Line</button>
+            <button mat-menu-item class="measure-item" [disabled]="isCircleMeasureToolSelected" (click)="addTool('circle',measureValue)">Circle</button>
+          </mat-menu>
+        </div>
+        <div class="input-container">
+          <input type="range" [value]="measureValue" min="5" max="20" (input)="editTool($event.target.value)" />
+          <div class="input-range">
+            <div class="range" *ngFor="let point of fixedRange">
+              <div class="cont"><div class="dot" [ngClass]="point == measureValue ? 'hide' : ''"></div></div>
+              <div>{{point}}&#181;m</div>
+            </div>
+          </div>
+          <input *ngIf="isLineMeasureToolSelected" type="range" min="0" max="360" [(ngModel)] = "rotateBy" (input)="redraw()" />
+        </div>
+      </div>
+    </div>
+    <div class="btns">
+      <i class="material-icons" title="Zoom out" (click)="zoomToCenter(-1)"
+      >remove_circle_outline</i
+      >
+      <span class="zoom-percent-value">{{totalZoomPerc + 'x'}}</span>
+      <button mat-button class="dropdown-zoom" [matMenuTriggerFor]="zoomMenu" #zoomMenutrigger="matMenuTrigger">
+        <span class="material-icons dropdown-icon">
+          keyboard_arrow_{{zoomMenutrigger.menuOpen ? 'up' : 'down'}}
+        </span></button>
+      <i class="material-icons" title="Zoom in" (click)="zoomToCenter(1)"
+      >add_circle_outline</i
+      >
+      <i class="material-icons" [ngClass]="{'material-icons reset-icon': true, disabled: totalZoomPerc === startingZoomPerc}" title="Set original size" (click)="resize()"
+      >replay</i
+      >
+    </div>
+  </div>
+</div>
+<canvas id="full-image">
+</canvas>
+<div *ngIf="isCanvasHovered" id="img-clip" class="extracted-cell-img-clip"></div>
+
+
+<mat-menu #zoomMenu="matMenu">
+  <button mat-menu-item *ngFor="let zoomOption of zoomOptions" (click)="onZoomOptionSelect(zoomOption)" class="menu-item" [ngClass]="{'selected': totalZoomPerc === zoomOption}">{{zoomOption}}x</button>
+</mat-menu>
